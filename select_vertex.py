@@ -33,31 +33,32 @@ for i in range(len(list_name)):
     vtxY = np.array(file['events']['vertexY'])
     vtxZ = np.array(file['events']['vertexZ'])
     minvalue = np.array(file['events']['minvalue'])
-  
+    pCharge = np.array(file['events']['pCharge'])
     dVertex = np.array(file['events']['dVertex'])
     
     vtxRho = np.hypot(vtxX, vtxY)
     if args.dvertex == 1:
         if args.min == 1:    
             if args.type == 0:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (dVertex < 0.6) & (minvalue < args.minvalue)  
+                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (dVertex < 0.6) & (minvalue < args.minvalue)
             else:
                 isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (minvalue < args.minvalue)
         else:
             if args.type == 0:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (dVertex < 0.6) 
+                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (dVertex < 0.6)
             else:
                 isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz)
                 
     else:
+        ####### type = 0 and type = 1 same / args.dvervex = 0 <--- no dvertex cut
         if args.min == 1:    
             if args.type == 0:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (minvalue < args.minvalue)  
+                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (minvalue < args.minvalue)
             else:
                 isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (minvalue < args.minvalue)
         else:
             if args.type == 0:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz)  
+                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz)
             else:
                 isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz)
 
@@ -80,6 +81,7 @@ for i in range(len(list_name)):
     out_vertexX = np.array(file['events']['vertexX'])[isFiducial]
     out_vertexY = np.array(file['events']['vertexY'])[isFiducial]
     out_vertexZ = np.array(file['events']['vertexZ'])[isFiducial]
+    out_pCharge = np.array(file['events']['pCharge'])[isFiducial]
     
     
     
@@ -105,6 +107,7 @@ for i in range(len(list_name)):
         g.create_dataset('vertexX', data=out_vertexX, **kwargs)
         g.create_dataset('vertexY', data=out_vertexY, **kwargs)
         g.create_dataset('vertexZ', data=out_vertexZ, **kwargs)
+        g.create_dataset('pCharge', data=out_pCharge, **kwargs)
 
 
 
