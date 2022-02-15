@@ -15,6 +15,7 @@ parser.add_argument('--type', action='store', type=int, help='FN =0 / ME = 1')
 parser.add_argument('--min', action='store', type=int, default = 1, help='no min cut =0 / min cut = 1')
 parser.add_argument('--minvalue', action='store', type=int, default = 400, help='min cut')
 parser.add_argument('--dvertex', action='store', type=int, default = 1, help='no dvertex cut =0 / dvertex cut = 1')
+parser.add_argument('--cut', action='store', type=int, default = 1, help='no cut =0 / cut = 1')
 args = parser.parse_args()
 
 
@@ -37,30 +38,34 @@ for i in range(len(list_name)):
     dVertex = np.array(file['events']['dVertex'])
     
     vtxRho = np.hypot(vtxX, vtxY)
-    if args.dvertex == 1:
-        if args.min == 1:    
-            if args.type == 0:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (dVertex < 0.6) & (minvalue < args.minvalue)
+    if args.cut == 1:
+    
+        if args.dvertex == 1:
+            if args.min == 1:    
+                if args.type == 0:
+                    isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (dVertex < 0.6) & (minvalue < args.minvalue)
+                else:
+                    isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (minvalue < args.minvalue)
             else:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (minvalue < args.minvalue)
+                if args.type == 0:
+                    isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (dVertex < 0.6)
+                else:
+                    isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz)
+
         else:
-            if args.type == 0:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (dVertex < 0.6)
+            ####### type = 0 and type = 1 same / args.dvervex = 0 <--- no dvertex cut
+            if args.min == 1:    
+                if args.type == 0:
+                    isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (minvalue < args.minvalue)
+                else:
+                    isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (minvalue < args.minvalue)
             else:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz)
-                
+                if args.type == 0:
+                    isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz)
+                else:
+                    isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz)
     else:
-        ####### type = 0 and type = 1 same / args.dvervex = 0 <--- no dvertex cut
-        if args.min == 1:    
-            if args.type == 0:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (minvalue < args.minvalue)
-            else:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz) & (minvalue < args.minvalue)
-        else:
-            if args.type == 0:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz)
-            else:
-                isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz)
+        isFiducial = (vtxRho <args.vtxRho) & (np.abs(vtxZ) < args.vtxz)
 
 
 
