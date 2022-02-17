@@ -6,6 +6,7 @@ import awkward as ak
 parser = argparse.ArgumentParser(description='Convert pulse shape root files to hdf')
 parser.add_argument('-i', '--input', action='store', type=str, required=True, help='input waveform file name')
 parser.add_argument('-o', '--output', action='store', type=str, required=True, help='output file name')
+parser.add_argument('--outputpath', action='store', type=str, required=True, help='outputpath')
 parser.add_argument('-q', '--quiet', action='store_true', default=False, help='supress progress bar')
 args = parser.parse_args()
 
@@ -55,6 +56,7 @@ if not args.quiet:
 
     
 print("Saving output...", end="")
+if not os.path.exists(args.outputpath): os.makedirs(args.outputpath)
 if args.output.endswith('.h5'):
     import h5py
     kwargs = {'dtype':'f4', 'compression':'lzf'}
