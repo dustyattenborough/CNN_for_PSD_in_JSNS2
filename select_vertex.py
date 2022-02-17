@@ -87,6 +87,7 @@ for i in range(len(list_name)):
     out_vertexY = np.array(file['events']['vertexY'])[isFiducial]
     out_vertexZ = np.array(file['events']['vertexZ'])[isFiducial]
     out_pCharge = np.array(file['events']['pCharge'])[isFiducial]
+    out_minvalue = np.array(file['events']['minvalue'])[isFiducial]
     
     
     
@@ -112,6 +113,7 @@ for i in range(len(list_name)):
         g.create_dataset('vertexX', data=out_vertexX, **kwargs)
         g.create_dataset('vertexY', data=out_vertexY, **kwargs)
         g.create_dataset('vertexZ', data=out_vertexZ, **kwargs)
+        g.create_dataset('minvalue', data=out_minvalue, **kwargs)
         g.create_dataset('pCharge', data=out_pCharge, **kwargs)
 
 
