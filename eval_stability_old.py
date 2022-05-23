@@ -44,26 +44,15 @@ from dataset.WFCh2Dataset_each_norm_involve_raw import *
 ##### Define dataset instance #####
 dset = WFCh2Dataset_each_norm_involve_raw(channel=config['format']['channel'], output = 'result/' + args.output)
 for sampleInfo in config['samples']:
-#     if 'ignore' in sampleInfo and sampleInfo['ignore']: continue
-#     name = sampleInfo['name']
-#     if args.odd == 1:
-#         in_path = '/store/hep/users/yewzzang/JSNS2/com_data/r00'+str(args.runnum)+'/'+name+'_cut_even_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_noDIN/*.h5'
-#     elif args.odd == 2:
-#         in_path = '/store/hep/users/yewzzang/JSNS2/com_data/r00'+str(args.runnum)+'/'+name+'_cut_odd_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_noDIN/*.h5'
-    
-#     else: ## total training
-#         in_path = '/store/hep/users/yewzzang/JSNS2/com_data/r00'+str(args.runnum)+'/'+name+'_cut_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_noDIN/*.h5'
-#     print(in_path)
     if 'ignore' in sampleInfo and sampleInfo['ignore']: continue
     name = sampleInfo['name']
     if args.odd == 1:
-        in_path = '/users/wonsang1995/work/JSNS2_ws/DINScore_0511/r00'+str(args.runnum)+'/'+name+'/*.h5'
+        in_path = '/users/yewzzang/work/JSNS2/NuML/PSD/com_data/r00'+str(args.runnum) + '_v3_ch/'+name+'_even_Rho_1.4_ZL_1.0_min_400_dv_1/*.h5'
     elif args.odd == 2:
-        in_path = '/users/wonsang1995/work/JSNS2_ws/DINScore_0511/r00'+str(args.runnum)+'/'+name+'/*.h5'
+        in_path = '/users/yewzzang/work/JSNS2/NuML/PSD/com_data/r00'+str(args.runnum) + '_v3_ch/'+name+'_odd_Rho_1.4_ZL_1.0_min_400_dv_1/*.h5'
     
     else: ## total training
-        in_path = '/users/wonsang1995/work/JSNS2_ws/DINScore_0511/r00'+str(args.runnum)+'/'+name+'/*.h5'
-    print(in_path)
+        in_path = '/users/yewzzang/work/JSNS2/NuML/PSD/com_data/r00'+str(args.runnum) + '_v3_ch/'+name+'_cut_Rho_1.4_ZL_1.0_min_400_dv_1/*.h5'
 
         
         
@@ -121,7 +110,6 @@ for i, (data, label0, weight, rescale, procIdx, fileIdx, idx, dVertexx, minvalue
     data = data.to(device)
 
 
-
     label = label0.to(device)
     label0 = label0.reshape(-1)[()].numpy()
     rescale = rescale.float().to(device)
@@ -171,7 +159,7 @@ si_numpy = np.array(si)
 preds = []
 labels = []
 dVertexs = []
-# dTs = []
+dTs = []
 vertexXs = []
 vertexYs = []
 vertexZs = []
@@ -190,7 +178,7 @@ for i in range(len(info_numpy)):
     
     data = h5py.File(filename,'r')
 
-#     dT = data['events']['dT'][idx]
+    dT = data['events']['dT'][idx]
     dVertex = data['events']['dVertex'][idx]
     vertexX = data['events']['vertexX'][idx]
     vertexY = data['events']['vertexY'][idx]
@@ -200,7 +188,7 @@ for i in range(len(info_numpy)):
     preds.append(pred)
     labels.append(label)
     dVertexs.append(dVertex)
-#     dTs.append(dT)
+    dTs.append(dT)
 #     print(dTs.type)
     vertexXs.append(vertexX)
     vertexYs.append(vertexY)
@@ -209,7 +197,7 @@ for i in range(len(info_numpy)):
 preds = np.array(preds)
 labels = np.array(labels)
 dVertexs = np.array(dVertexs)
-# dTs = np.array(dTs)
+dTs = np.array(dTs)
 vertexXs = np.array(vertexXs)
 vertexYs = np.array(vertexYs)
 vertexZs = np.array(vertexZs)
@@ -217,7 +205,7 @@ vertexZs = np.array(vertexZs)
 
 ME_label = []
 ME_dVertex = []
-# ME_dT = []
+ME_dT = []
 ME_vertexX = []
 ME_vertexY = []
 ME_vertexZ = []
@@ -226,7 +214,7 @@ ME_pred = []
 
 FN_label = []
 FN_dVertex = []
-# FN_dT = []
+FN_dT = []
 FN_vertexX = []
 FN_vertexY = []
 FN_vertexZ = []
@@ -236,7 +224,7 @@ for i in range(len(preds)):
     if labels[i] == 1:
         ME_label.append(labels[i])
         ME_dVertex.append(dVertexs[i])
-#         ME_dT.append(dTs[i])
+        ME_dT.append(dTs[i])
         ME_vertexX.append(vertexXs[i])
         ME_vertexY.append(vertexYs[i])
         ME_vertexZ.append(vertexZs[i])
@@ -245,7 +233,7 @@ for i in range(len(preds)):
    
         FN_label.append(labels[i])
         FN_dVertex.append(dVertexs[i])
-#         FN_dT.append(dTs[i])
+        FN_dT.append(dTs[i])
         FN_vertexX.append(vertexXs[i])
         FN_vertexY.append(vertexYs[i])
         FN_vertexZ.append(vertexZs[i])
@@ -285,19 +273,17 @@ plt.clf()
 
 
 
-# num_FN = len(FN_dT)
-# num_ME = len(ME_dT)
-num_FN = len(FN_dVertex)
-num_ME = len(ME_dVertex)
+num_FN = len(FN_dT)
+num_ME = len(ME_dT)
 ###########plot dT
-# plt.hist(np.array(FN_dT)*0.001, bins = 100, color= 'r', alpha = 0.5, density = True, histtype = 'step')
-# plt.hist(np.array(ME_dT)*0.001, bins = 100, color= 'b', alpha = 0.5, density = True, histtype = 'step')
+plt.hist(np.array(FN_dT)*0.001, bins = 100, color= 'r', alpha = 0.5, density = True, histtype = 'step')
+plt.hist(np.array(ME_dT)*0.001, bins = 100, color= 'b', alpha = 0.5, density = True, histtype = 'step')
 
-# plt.xticks(fontsize = 15)
-# plt.yticks(fontsize = 15)
-# plt.xlabel("\u03BCs", fontsize=15, loc='right')
-# plt.savefig('result/' + args.output + '/' + args.output + '_dT.png', dpi=300)
-# plt.clf()
+plt.xticks(fontsize = 15)
+plt.yticks(fontsize = 15)
+plt.xlabel("\u03BCs", fontsize=15, loc='right')
+plt.savefig('result/' + args.output + '/' + args.output + '_dT.png', dpi=300)
+plt.clf()
 
 ###########plot dVertex
 plt.hist(np.array(FN_dVertex)*100, bins = 80, color= 'r', alpha = 0.5, density = True, histtype = 'step')
@@ -399,7 +385,7 @@ print('--------------------------------------------------',file=f)
 print('CNN score|','','%.3f'%eff_90,' | ','%.3f'%eff_95,' | ','%.3f'%eff_99,' |  ',0.5,'  |',file=f)
 print('==================================================',file=f)
 print('         |   FN    |   ME    |',file=f)
-print('# data   |','%7d'%len(FN_dVertex),'|', '%7d'%len(ME_dVertex),'|',file=f)
+print('# data   |','%7d'%len(FN_dT),'|', '%7d'%len(ME_dT),'|',file=f)
 
 f.close()
 
@@ -510,7 +496,7 @@ print(int(num_90_FN),int(num_95_FN),int(num_99_FN),int(num_50_FN),file=f)
 print(eff_90,eff_95,eff_99,0.5,file=f)
 
 
-print(len(FN_dVertex),len(ME_dVertex),file=f)
+print(len(FN_dT),len(ME_dT),file=f)
 print(auc,file=f)
 
 f.close()

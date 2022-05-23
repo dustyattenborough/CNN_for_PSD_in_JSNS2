@@ -14,7 +14,7 @@ format:
     channel: 96
 training:
     randomSeed1: 12345
-    nDataLoaders: 4
+    nDataLoaders: 0
     #nDataLoaders: 0
     splitFractions: [0.0, 0.0] ## training set, validation set. (test set is the reminders)
 

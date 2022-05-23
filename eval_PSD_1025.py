@@ -13,11 +13,11 @@ import torch.nn as nn
 import matplotlib.pyplot as plt
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', action='store', type=str, default='config.yaml', help='Configration file with sample information')
-parser.add_argument('--data', action='store', type=str, help='data type select')
+
 parser.add_argument('-o', '--output', action='store', type=str, required=True, help='Path to output file')
 #parser.add_argument('-t', '--train', action='store', type=str, required=True, help='Path to training results directory')
 parser.add_argument('-a', '--all', action='store_true', help='use all events for the evaluation, no split')
-parser.add_argument('--norm', action='store', type=int, default = 0, help='max norm =0 / each norm = 1')
+
 parser.add_argument('--odd', action='store', type=float, help='odd =1 or total = 0')
 parser.add_argument('--runnum', action='store', type=int, help='runnumber')
 parser.add_argument('--rho', action='store', type=float, help='rho')
@@ -40,26 +40,21 @@ torch.set_num_threads(os.cpu_count())
 if torch.cuda.is_available() and args.device >= 0: torch.cuda.set_device(args.device)
 
 ##### Define dataset instance #####
-
-from dataset.WFCh2Dataset_each_norm import *
-from dataset.WFCh2Dataset_max_norm import *
-
+from dataset.WFCh2Dataset_each_norm_involve_raw import *
 
 ##### Define dataset instance #####
-if args.norm == 0:
-    dset = WFCh2Dataset_each_norm(channel=config['format']['channel'], output = 'result/' + args.output)
-else:
-    dset = WFCh2Dataset_max_norm(channel=config['format']['channel'], output = 'result/' + args.output)
+dset = WFCh2Dataset_each_norm_involve_raw(channel=config['format']['channel'], output = 'result/' + args.output)
 for sampleInfo in config['samples']:
     if 'ignore' in sampleInfo and sampleInfo['ignore']: continue
     name = sampleInfo['name']
     if args.odd == 1:
-        in_path = 'com_data/r00'+str(args.runnum) + '_' + str(args.data) +'/'+name+'_even_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_min_'+str(args.minvalue)+'_dv_'+str(args.dvertex)+'/*.h5'
+        in_path = '/store/hep/users/yewzzang/JSNS2/com_data/r00'+str(args.runnum)+'/'+name+'_cut_even_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_noDIN/*.h5'
     elif args.odd == 2:
-        in_path = 'com_data/r00'+str(args.runnum) + '_' + str(args.data) +'/'+name+'_odd_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_min_'+str(args.minvalue)+'_dv_'+str(args.dvertex)+'/*.h5'
+        in_path = '/store/hep/users/yewzzang/JSNS2/com_data/r00'+str(args.runnum)+'/'+name+'_cut_odd_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_noDIN/*.h5'
     
     else: ## total training
-        in_path = 'com_data/r00'+str(args.runnum) + '_' + str(args.data) +'/'+name+'_cut_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_min_'+str(args.minvalue)+'_dv_'+str(args.dvertex)+'/*.h5'
+        in_path = '/store/hep/users/yewzzang/JSNS2/com_data/r00'+str(args.runnum)+'/'+name+'_cut_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_noDIN/*.h5'
+    print(in_path)
     dset.addSample(name, in_path, weight=sampleInfo['xsec']/sampleInfo['ngen'])
 #     dset.addSample(name, sampleInfo['path'], weight=sampleInfo['xsec']/sampleInfo['ngen'])
     dset.setProcessLabel(name, sampleInfo['label'])
@@ -152,7 +147,7 @@ model.eval()
 val_loss, val_acc = 0., 0.
 # for i, (data, label0, weight, rescale, procIdx, fileIdx, idx, dT, dVertex, vertexX, vertexY, vertexZ) in enumerate(tqdm(testLoader)):
 
-for i, (data, label0, weight, rescale, procIdx, fileIdx, idx) in enumerate(tqdm(testLoader)):
+for i, (data, label0, weight, rescale, procIdx, fileIdx, idx, dVertexx, minvaluee, pChargee,vertexx,vertexy,vertexz) in enumerate(tqdm(testLoader)):
     data = data.to(device)
 
 

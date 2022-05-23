@@ -20,9 +20,9 @@ from models.allModels import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', action='store', type=str, default='config.yaml', help='Configration file with sample information')
-parser.add_argument('--data', action='store', type=str, help='data type select')
+
 parser.add_argument('-o', '--output', action='store', type=str, required=True, help='Path to output directory')
-parser.add_argument('--norm', action='store', type=int, default = 0, help='max norm =0 / each norm = 1')
+
 parser.add_argument('--device', action='store', type=int, default=0, help='device name')
 parser.add_argument('--epoch', action='store', type=int, help='Number of epochs')
 parser.add_argument('--batch', action='store', type=int, default=32, help='Batch size')
@@ -52,24 +52,21 @@ if torch.cuda.is_available() and args.device >= 0: torch.cuda.set_device(args.de
 if not os.path.exists('result/' + args.output): os.makedirs('result/' + args.output)
 
 ##### Define dataset instance #####
-if args.norm == 0:
-    dset = WFCh2Dataset_each_norm(channel=config['format']['channel'], output = 'result/' + args.output)
-else:
-    dset = WFCh2Dataset_max_norm(channel=config['format']['channel'], output = 'result/' + args.output)
-    
-    
+from dataset.WFCh2Dataset_each_norm_involve_raw import *
+
+##### Define dataset instance #####
+dset = WFCh2Dataset_each_norm_involve_raw(channel=config['format']['channel'], output = 'result/' + args.output)
 for sampleInfo in config['samples']:
     if 'ignore' in sampleInfo and sampleInfo['ignore']: continue
-    
     name = sampleInfo['name']
-    
     if args.odd == 1:
-        in_path = 'com_data/r00'+str(args.runnum) + '_' + str(args.data) +'/'+name+'_even_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_min_'+str(args.minvalue)+'_dv_'+str(args.dvertex)+'/*.h5'
+        in_path = '/store/hep/users/yewzzang/JSNS2/com_data/r00'+str(args.runnum)+'/'+name+'_cut_even_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_noDIN/*.h5'
     elif args.odd == 2:
-        in_path = 'com_data/r00'+str(args.runnum) + '_' + str(args.data) +'/'+name+'_odd_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_min_'+str(args.minvalue)+'_dv_'+str(args.dvertex)+'/*.h5'
+        in_path = '/store/hep/users/yewzzang/JSNS2/com_data/r00'+str(args.runnum)+'/'+name+'_cut_odd_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_noDIN/*.h5'
     
     else: ## total training
-        in_path = 'com_data/r00'+str(args.runnum) + '_' + str(args.data) +'/'+name+'_cut_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_min_'+str(args.minvalue)+'_dv_'+str(args.dvertex)+'/*.h5'
+        in_path = '/store/hep/users/yewzzang/JSNS2/com_data/r00'+str(args.runnum)+'/'+name+'_cut_Rho_'+str(args.rho)+'_ZL_'+str(args.vtz)+'_noDIN/*.h5'
+    print(in_path)
 
     dset.addSample(name, in_path, weight=sampleInfo['xsec']/sampleInfo['ngen'])
     dset.setProcessLabel(name, sampleInfo['label'])
@@ -116,7 +113,7 @@ for epoch in range(nEpoch):
     trn_loss, trn_acc = 0., 0.
     nProcessed = 0
     optm.zero_grad()
-    for i, (data, label0, weight, rescale, procIdx, fileIdx, idx) in enumerate(tqdm(trnLoader, desc='epoch %d/%d' % (epoch+1, nEpoch))):
+    for i, (data, label0, weight, rescale, procIdx, fileIdx, idx, dVertexx, minvaluee, pChargee,vertexx,vertexy,vertexz) in enumerate(tqdm(trnLoader, desc='epoch %d/%d' % (epoch+1, nEpoch))):
         data = data.to(device)
 
         label = label0.float().to(device)
@@ -141,7 +138,7 @@ for epoch in range(nEpoch):
     model.eval()
     val_loss, val_acc = 0., 0.
     nProcessed = 0
-    for i, (data, label0, weight, rescale, procIdx, fileIdx, idx) in enumerate(tqdm(valLoader)):
+    for i, (data, label0, weight, rescale, procIdx, fileIdx, idx, dVertexx, minvaluee, pChargee,vertexx,vertexy,vertexz) in enumerate(tqdm(valLoader)):
         data = data.to(device)
         label = label0.float().to(device)
         weight = (weight*rescale).float().to(device)
