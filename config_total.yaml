@@ -16,7 +16,7 @@ training:
     randomSeed1: 12345
     nDataLoaders: 0
     #nDataLoaders: 0
-    splitFractions: [0.0, 0.0] ## training set, validation set. (test set is the reminders)
+    splitFractions: [0.6, 0.2] ## training set, validation set. (test set is the reminders)
 
     epoch: 400
     learningRate: 1e-4

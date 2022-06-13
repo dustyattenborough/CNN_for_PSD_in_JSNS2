@@ -12,20 +12,20 @@ do
             echo ${j}
 
             echo ${m}
-#             ##################### min value 없음
-#             python select_vertex_outAC.py \
-#             -i /store/hep/users/yewzzang/JSNS2/com_data/r00${i}/FN_h5/ \
-#             -o /store/hep/users/yewzzang/JSNS2/com_data/r00${i}/FN_cut_Rho_${j}_ZL_${m}/  \
-#             --vtxRho ${j} --vtxz ${m} --type 0 --min 1 --minvalue 400 --dvertex 1 --cut 1
+            ##################### min value 없음
+            python select_vertex.py \
+            -i /store/hep/users/yewzzang/JSNS2/com_data/r00${i}/FN_h5/ \
+            -o /store/hep/users/yewzzang/JSNS2/com_data/r00${i}/FN_cut_Rho_${j}_ZL_${m}/  \
+            --vtxRho ${j} --vtxz ${m} --type 0 --min 1 --minvalue 400 --dvertex 1 --cut 1
 
-#             echo "FN clear"
+            echo "FN clear"
 
-#             python select_vertex_outAC.py \
-#             -i /store/hep/users/yewzzang/JSNS2/com_data/r00${i}/ME_h5/ \
-#             -o /store/hep/users/yewzzang/JSNS2/com_data/r00${i}/ME_cut_Rho_${j}_ZL_${m}/ \
-#             --vtxRho ${j} --vtxz ${m} --type 1 --min 1 --minvalue 400 --dvertex 1 --cut 1
+            python select_vertex.py \
+            -i /store/hep/users/yewzzang/JSNS2/com_data/r00${i}/ME_h5/ \
+            -o /store/hep/users/yewzzang/JSNS2/com_data/r00${i}/ME_cut_Rho_${j}_ZL_${m}/ \
+            --vtxRho ${j} --vtxz ${m} --type 1 --min 1 --minvalue 400 --dvertex 1 --cut 1
 
-#             echo "ME clear"
+            echo "ME clear"
 
             python data_subrun_divide.py \
             -i /store/hep/users/yewzzang/JSNS2/com_data/r00${i}/FN_cut_Rho_${j}_ZL_${m}/ \
